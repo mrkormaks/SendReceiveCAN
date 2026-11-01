@@ -1,0 +1,79 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": { "major": 3, "minor": 21, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+    },
+    {
+      "name": "windows-clang-cl",
+      "displayName": "Windows: clang-cl + Ninja (LLVM, no Visual Studio IDE)",
+      "inherits": "base",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" },
+      "cacheVariables": { "CMAKE_CXX_COMPILER": "clang-cl" }
+    },
+    {
+      "name": "windows-mingw",
+      "displayName": "Windows: MinGW-w64 GCC (MSYS2 UCRT64) + Ninja",
+      "inherits": "base",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" },
+      "cacheVariables": { "CMAKE_CXX_COMPILER": "g++" }
+    },
+    {
+      "name": "windows-clang",
+      "displayName": "Windows: Clang for MinGW-w64 (MSYS2 CLANG64) + Ninja",
+      "inherits": "base",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" },
+      "cacheVariables": { "CMAKE_CXX_COMPILER": "clang++" }
+    },
+    {
+      "name": "mingw-cross",
+      "displayName": "Linux -> Windows cross build with MinGW-w64",
+      "inherits": "base",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Linux" },
+      "toolchainFile": "${sourceDir}/cmake/mingw-w64-x86_64.cmake"
+    },
+    {
+      "name": "dev",
+      "displayName": "Linux/macOS development: core library and unit tests",
+      "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "CAN_BRIDGE_WARNINGS_AS_ERRORS": "ON"
+      }
+    },
+    {
+      "name": "dev-sanitizers",
+      "displayName": "Linux development with AddressSanitizer, UBSan",
+      "inherits": "dev",
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS": "-fsanitize=address,undefined -fno-omit-frame-pointer"
+      }
+    },
+    {
+      "name": "dev-tsan",
+      "displayName": "Linux development with ThreadSanitizer",
+      "inherits": "dev",
+      "cacheVariables": { "CMAKE_CXX_FLAGS": "-fsanitize=thread" }
+    }
+  ],
+  "buildPresets": [
+    { "name": "windows-clang-cl", "configurePreset": "windows-clang-cl" },
+    { "name": "windows-mingw", "configurePreset": "windows-mingw" },
+    { "name": "windows-clang", "configurePreset": "windows-clang" },
+    { "name": "mingw-cross", "configurePreset": "mingw-cross" },
+    { "name": "dev", "configurePreset": "dev" },
+    { "name": "dev-sanitizers", "configurePreset": "dev-sanitizers" },
+    { "name": "dev-tsan", "configurePreset": "dev-tsan" }
+  ],
+  "testPresets": [
+    { "name": "dev", "configurePreset": "dev", "output": { "outputOnFailure": true } },
+    { "name": "dev-sanitizers", "configurePreset": "dev-sanitizers", "output": { "outputOnFailure": true } },
+    { "name": "dev-tsan", "configurePreset": "dev-tsan", "output": { "outputOnFailure": true } }
+  ]
+}

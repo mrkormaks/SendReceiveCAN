@@ -1,0 +1,16 @@
+# Build trees
+/build/
+/build-*/
+/out/
+CMakeUserPresets.json
+
+# IDE files
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Simulator headers are proprietary and must not be committed; point
+# CAN_BRIDGE_SIM_INCLUDE_DIR at their location instead.
+/third_party/sim_headers/
